@@ -5,14 +5,53 @@
   <title>客户聊天窗口</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    #chat { height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-    #msg { width: 80%; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #chat {
+      width: 80%;
+      max-width: 600px;
+      height: 350px;
+      overflow-y: scroll;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    #chat div {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f1f1f1;
+    }
+    #msg {
+      width: 75%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
-  <h2>👤 客户端</h2>
-
   <div id="chat"></div>
   <input type="text" id="msg" placeholder="请输入消息" />
   <button onclick="send()">发送</button>
