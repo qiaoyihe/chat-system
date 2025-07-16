@@ -1,38 +1,41 @@
 const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+
 const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+const server = http.createServer(app);
+const io = socketIo(server);
 
 app.use(express.static('public'));
-app.use(express.json());
-
-const ADMIN_PASSWORD = '123456789'; // 管理员密码
-
-app.post('/admin-login', (req, res) => {
-  const { password } = req.body;
-  if (password === ADMIN_PASSWORD) {
-    res.json({ success: true });
-  } else {
-    res.json({ success: false });
-  }
-});
 
 io.on('connection', (socket) => {
-  console.log('一个用户连接：', socket.id);
+  console.log('新用户连接: ', socket.id);
 
   socket.on('user_message', (data) => {
-    io.emit('new_message', { sender: '用户', message: data });
+    const { message, time } = data;
+    console.log(`用户消息: ${message} | 时间: ${time}`);
+    io.emit('new_message', {
+      sender: 'customer',
+      message: message,
+      time: time,
+    });
   });
 
   socket.on('admin_message', (data) => {
-    io.emit('new_message', { sender: '客服', message: data });
+    const { message, time } = data;
+    console.log(`客服消息: ${message} | 时间: ${time}`);
+    io.emit('new_message', {
+      sender: 'support',
+      message: message,
+      time: time,
+    });
   });
 
   socket.on('disconnect', () => {
-    console.log('用户断开连接：', socket.id);
+    console.log('用户断开连接:', socket.id);
   });
 });
 
-http.listen(3000, () => {
-  console.log('服务器已启动：http://localhost:3000');
+server.listen(3000, () => {
+  console.log('服务已启动：http://localhost:3000');
 });

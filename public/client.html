@@ -1,83 +1,69 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>客户聊天窗口</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      padding: 20px;
-      flex-direction: column;
-    }
-    #chat {
-      width: 90%;
-      max-width: 600px;
-      height: 400px;
-      background-color: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      overflow-y: scroll;
-      margin-bottom: 20px;
-    }
-    #msg {
-      width: 80%;
-      padding: 12px;
-      font-size: 1.1em;
-      border: 1px solid #ddd;
-      border-radius: 25px;
-      margin-bottom: 10px;
-      outline: none;
-    }
-    button {
-      padding: 12px 25px;
-      background-color: #007bff;
-      color: white;
-      font-size: 1.1em;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f9f9f9; display: flex; justify-content: center; align-items: center; height: 100vh; padding: 20px; flex-direction: column; }
+    #chatBox { width: 100%; max-width: 600px; height: 400px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); overflow-y: auto; margin-bottom: 20px; }
+    .message { margin-bottom: 15px; display: flex; }
+    .message .avatar { width: 35px; height: 35px; border-radius: 50%; background-color: #ccc; margin-right: 10px; }
+    .message .content { padding: 10px 15px; border-radius: 15px; max-width: 70%; word-wrap: break-word; }
+    .message.customer .content { background-color: #007bff; color: white; }
+    .message.support .content { background-color: #f1f1f1; color: black; }
+    .message .time { font-size: 0.8em; color: #999; margin-top: 5px; }
+    #inputBox { display: flex; width: 100%; max-width: 600px; }
+    #msg { width: 85%; padding: 12px; font-size: 1em; border-radius: 25px; border: 1px solid #ddd; margin-right: 10px; }
+    button { padding: 12px 20px; background-color: #007bff; color: white; font-size: 1em; border: none; border-radius: 25px; cursor: pointer; transition: background-color 0.3s ease; }
+    button:hover { background-color: #0056b3; }
   </style>
 </head>
 <body>
-  <div id="chat">
-    <div>客服消息：欢迎来到客服中心</div>
+
+  <div id="chatBox">
+    <div class="message support">
+      <div class="avatar"></div>
+      <div class="content">
+        您好，欢迎来到我们的客服系统！
+        <div class="time">2017-10-28 10:54:01</div>
+      </div>
+    </div>
   </div>
-  <input type="text" id="msg" placeholder="输入消息..." />
-  <button onclick="send()">发送</button>
+
+  <div id="inputBox">
+    <input type="text" id="msg" placeholder="请输入消息..." />
+    <button onclick="send()">发送</button>
+  </div>
 
   <script>
     const socket = io();
-    const chat = document.getElementById('chat');
+    const chatBox = document.getElementById('chatBox');
 
     socket.on('new_message', data => {
-      const item = document.createElement('div');
-      item.textContent = `${data.sender}: ${data.message}`;
-      chat.appendChild(item);
-      chat.scrollTop = chat.scrollHeight;
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', data.sender === 'support' ? 'support' : 'customer');
+      messageDiv.innerHTML = `
+        <div class="avatar"></div>
+        <div class="content">
+          ${data.message}
+          <div class="time">${data.time}</div>
+        </div>
+      `;
+      chatBox.appendChild(messageDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
     });
 
     function send() {
       const msg = document.getElementById('msg').value;
-      socket.emit('user_message', msg);
+      if (msg.trim() === '') return;
+      const time = new Date().toLocaleString();
+      socket.emit('user_message', { sender: 'customer', message: msg, time: time });
       document.getElementById('msg').value = '';
     }
   </script>
+
 </body>
 </html>
