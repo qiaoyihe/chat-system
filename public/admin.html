@@ -5,18 +5,64 @@
   <title>客服后台</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f2f2f2; }
-    #chat, #inputBox { display: none; }
-    #chat { height: 300px; overflow-y: scroll; border: 1px solid #ccc; background: white; padding: 10px; margin-bottom: 10px; }
-    #msg { width: 80%; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    #loginBox {
+      text-align: center;
+      background-color: white;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+    input {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 75%;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #chat {
+      width: 80%;
+      max-width: 600px;
+      height: 350px;
+      overflow-y: scroll;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-top: 20px;
+      display: none;
+    }
+    #msg {
+      width: 75%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
-  <h2>🧑‍💼 客服后台</h2>
-
   <div id="loginBox">
-    <p>请输入管理员密码：</p>
-    <input type="password" id="adminPassword" placeholder="密码" />
+    <h2>管理员登录</h2>
+    <input type="password" id="adminPassword" placeholder="请输入密码" />
     <button onclick="adminLogin()">登录</button>
     <p id="error" style="color:red;"></p>
   </div>
