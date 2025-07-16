@@ -6,7 +6,7 @@ const io = require('socket.io')(http);
 app.use(express.static('public'));
 app.use(express.json());
 
-const ADMIN_PASSWORD = 'admin123'; // 管理员密码
+const ADMIN_PASSWORD = '123456789'; // 管理员密码
 
 app.post('/admin-login', (req, res) => {
   const { password } = req.body;
