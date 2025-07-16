@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>客服后台</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f2f2f2; }
+    #chat, #inputBox { display: none; }
+    #chat { height: 300px; overflow-y: scroll; border: 1px solid #ccc; background: white; padding: 10px; margin-bottom: 10px; }
+    #msg { width: 80%; }
+  </style>
+</head>
+<body>
+  <h2>🧑‍💼 客服后台</h2>
+
+  <div id="loginBox">
+    <p>请输入管理员密码：</p>
+    <input type="password" id="adminPassword" placeholder="密码" />
+    <button onclick="adminLogin()">登录</button>
+    <p id="error" style="color:red;"></p>
+  </div>
+
+  <div id="chat"></div>
+  <div id="inputBox">
+    <input type="text" id="msg" placeholder="请输入回复内容" />
+    <button onclick="send()">发送</button>
+  </div>
+
+  <script>
+    const socket = io();
+    let isAuthenticated = false;
+
+    function adminLogin() {
+      const pwd = document.getElementById('adminPassword').value;
+      fetch('/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pwd })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          isAuthenticated = true;
+          document.getElementById('loginBox').style.display = 'none';
+          document.getElementById('chat').style.display = 'block';
+          document.getElementById('inputBox').style.display = 'block';
+        } else {
+          document.getElementById('error').innerText = '密码错误，请重试';
+        }
+      });
+    }
+
+    const chat = document.getElementById('chat');
+    socket.on('new_message', data => {
+      if (isAuthenticated) {
+        const item = document.createElement('div');
+        item.textContent = `${data.sender}：${data.message}`;
+        chat.appendChild(item);
+        chat.scrollTop = chat.scrollHeight;
+      }
+    });
+
+    function send() {
+      const msg = document.getElementById('msg').value;
+      if (isAuthenticated) {
+        socket.emit('admin_message', msg);
+        document.getElementById('msg').value = '';
+      }
+    }
+  </script>
+</body>
+</html>
